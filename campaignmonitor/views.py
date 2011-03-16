@@ -37,9 +37,9 @@ def create_draft(request, id):
     
     try:
         campaign.create_draft(preview_recipients=preview_recipients)
-        messages.success(request, _("The draft was created successfully."))
+        messages.success(request, _("The draft for campaign '%(name)s' was created successfully.") % {'name': campaign.name})
         if request.user.email:
-            messages.info(request, _("A preview has been sent to %(email)s." % {'email': request.user.email}))
+            messages.info(request, _("A preview has been sent to %(email)s.") % {'email': request.user.email})
     except BadRequest, e:
         messages.error(request, _("An error occurred: %(code)s %(message)s") % {'code': e.data.Code, 'message': e.data.Message})
     
