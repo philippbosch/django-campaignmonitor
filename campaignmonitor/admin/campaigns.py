@@ -13,6 +13,7 @@ class RecipientsInline(admin.TabularInline):
 
 class CampaignAdmin(admin.ModelAdmin):
     list_display = ('name', 'subject', 'preview_link', 'create_draft_link',)
+    readonly_fields = ('cm_id',)
     inlines = [RecipientsInline,]
     
     def preview_link(self, instance):
@@ -21,7 +22,7 @@ class CampaignAdmin(admin.ModelAdmin):
     preview_link.allow_tags = True
     
     def create_draft_link(self, instance):
-        return '<a href="%s" target="_blank">%s</a>' % (reverse('campaign_create_draft', kwargs={'id': instance.id}), capfirst(_("create draft")))
+        return '<a href="%s">%s</a>' % (reverse('campaign_create_draft', kwargs={'id': instance.id}), capfirst(_("create draft")))
     create_draft_link.short_description = _("create draft")
     create_draft_link.allow_tags = True
     

@@ -21,6 +21,6 @@ SEGMENTS = []
 for list in LISTS:
     try:
         for segment in list[2]:
-            SEGMENTS.append(segment)
+            SEGMENTS.append((segment[0], "%s :: %s" % (list[1], segment[1])))
     except IndexError:
         pass

@@ -27,6 +27,9 @@ class Campaign(models.Model):
         verbose_name_plural = _("campaigns")
         app_label = 'campaignmonitor'
     
+    def __unicode__(self):
+        return u"%s" % self.name
+    
     @property
     def html_url(self):
         return "http://%s%s" % (Site.objects.get_current().domain, reverse('campaign_content_html', kwargs={'id':self.id}))
@@ -48,7 +51,7 @@ class Campaign(models.Model):
         list_ids = self.list_ids
         ids = []
         for r in self.recipients_set.all():
-            if len(r.segment_id) and r.segment_id not in ids and r.list_id in list_ids:
+            if len(r.segment_id) and r.segment_id not in ids:
                 ids.append(r.segment_id)
         return ids
     
@@ -80,7 +83,7 @@ class Campaign(models.Model):
 
 class Recipients(models.Model):
     campaign = models.ForeignKey(Campaign, verbose_name=_("campaign"))
-    list_id = models.CharField(verbose_name=_("list"), max_length=32, choices=[(l[0], l[1]) for l in settings.LISTS])
+    list_id = models.CharField(verbose_name=_("list"), max_length=32, blank=True, choices=[(l[0], l[1]) for l in settings.LISTS])
     segment_id = models.CharField(verbose_name=_("segment"), max_length=32, blank=True, choices=[(s[0], s[1]) for s in settings.SEGMENTS])
     
     class Meta:
@@ -88,3 +91,9 @@ class Recipients(models.Model):
         verbose_name_plural = _("recipients")
         app_label = 'campaignmonitor'
     
+    def clean(self):
+        if self.list_id and self.segment_id:
+            raise ValidationError(_("Select either a list or a segment but not both"))
+        
+        if not self.list_id and not self.segment_id:
+            raise ValidationError(_("Select either a list or a segment"))

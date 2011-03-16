@@ -1,7 +1,10 @@
+from createsend import BadRequest
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
-
-from createsend import BadRequest
+from django.utils.translation import ugettext_lazy as _
+from django.contrib import messages
 
 from . import settings
 from .models import Campaign
@@ -27,9 +30,6 @@ def campaign_content_text(request, id):
 
 def create_draft(request, id):
     campaign = get_object_or_404(Campaign, id=id)
-    context = {
-        'campaign': campaign
-    }
     
     preview_recipients = []
     if request.user.email:
@@ -37,6 +37,10 @@ def create_draft(request, id):
     
     try:
         campaign.create_draft(preview_recipients=preview_recipients)
+        messages.success(request, _("The draft was created successfully."))
+        if request.user.email:
+            messages.info(request, _("A preview has been sent to %(email)s." % {'email': request.user.email}))
     except BadRequest, e:
-        context.update({'error': e})
-    return render_to_response('campaignmonitor/draft-created.html', context, context_instance=RequestContext(request))
+        messages.error(request, _("An error occurred: %(code)s %(message)s") % {'code': e.data.Code, 'message': e.data.Message})
+    
+    return HttpResponseRedirect(reverse('admin:campaignmonitor_campaign_changelist'))
