@@ -1,4 +1,4 @@
-from createsend import CreateSend, Campaign as CSCampaign
+from createsend import CreateSend, Campaign as CSCampaign, BadRequest
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -13,7 +13,7 @@ from ..utils import get_content_models
 
 
 class Campaign(models.Model):
-    cm_id = models.CharField(verbose_name=_("Campaign Monitor ID"), max_length=32, blank=True)
+    cm_id = models.CharField(verbose_name=_("Campaign Monitor ID"), max_length=32, blank=True, editable=True)
     name = models.CharField(verbose_name=_("name"), max_length=255)
     subject = models.CharField(verbose_name=_("subject"), max_length=255)
     from_name = models.CharField(verbose_name=_("from name"), max_length=255)
@@ -35,40 +35,53 @@ class Campaign(models.Model):
     def text_url(self):
         return "http://%s%s" % (Site.objects.get_current().domain, reverse('campaign_content_text', kwargs={'id':self.id}))
     
-    def save(self, *args, **kwargs):
-        new_campaign = not self.id
-        obj = super(Campaign, self).save(*args, **kwargs)
-        if new_campaign:
-            CreateSend.api_key = settings.API_KEY
-            campaign = CSCampaign()
-            attrs = dict(
-                client_id=settings.CLIENT_ID,
-                subject=self.subject,
-                name=self.name,
-                from_name=self.from_name,
-                from_email=self.from_email,
-                reply_to=self.from_email, # TODO
-                html_url=self.html_url,
-                text_url=self.text_url,
-                list_ids=['d222291923c83a64c3f758cdc011c65a'], # TODO
-                segment_ids=[] # TODO
-            )
-            try:
-                camp = campaign.create(**attrs)
-            except Exception, e:
-                raise ValidationError("Campaign Monitor API error %s: %s" % (e.data.Code, e.data.Message))
-        return obj
+    @property
+    def list_ids(self):
+        ids = []
+        for r in self.recipients_set.all():
+            if r.list_id not in ids:
+                ids.append(r.list_id)
+        return ids
+    
+    @property
+    def segment_ids(self):
+        list_ids = self.list_ids
+        ids = []
+        for r in self.recipients_set.all():
+            if r.segment_id not in ids and r.list_id in list_ids:
+                ids.append(r.segment_id)
+        return ids
+    
+    def create_draft(self):
+        CreateSend.api_key = settings.API_KEY
+        campaign = CSCampaign()
+        attrs = dict(
+            client_id=settings.CLIENT_ID,
+            subject=self.subject,
+            name=self.name,
+            from_name=self.from_name,
+            from_email=self.from_email,
+            reply_to=self.from_email, # TODO
+            html_url=self.html_url,
+            text_url=self.text_url,
+            list_ids=self.list_ids,
+            segment_ids=self.segment_ids,
+        )
+        try:
+            campaign_id = campaign.create(**attrs)
+            self.cm_id = campaign_id
+            self.save()
+        except BadRequest, e:
+            raise
 
 
-class List(models.Model):
-    cm_id = models.CharField(verbose_name=_("Campaign Monitor ID"), max_length=32, blank=True)
-    title = models.CharField(verbose_name=_("title"), max_length=255)
-    unsubscribe_page = models.URLField(verbose_name=_("unsubscribe page"), max_length=255)
-    confirmed_opt_in = models.BooleanField(verbose_name=_("confirmed opt-in"), default=True)
-    confirmation_success_page = models.URLField(verbose_name=_("confirmation success page"), max_length=255)
+class Recipients(models.Model):
+    campaign = models.ForeignKey(Campaign, verbose_name=_("campaign"))
+    list_id = models.CharField(verbose_name=_("list"), max_length=32, choices=[(l[0], l[1]) for l in settings.LISTS])
+    segment_id = models.CharField(verbose_name=_("segment"), max_length=32, blank=True, choices=[(s[0], s[1]) for s in settings.SEGMENTS])
     
     class Meta:
-        verbose_name = _("list")
-        verbose_name_plural = _("lists")
+        verbose_name = _("recipients")
+        verbose_name_plural = _("recipients")
         app_label = 'campaignmonitor'
-
+    
