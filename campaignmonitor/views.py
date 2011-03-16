@@ -22,7 +22,7 @@ def campaign_content_text(request, id):
     context = {
         'campaign': campaign,
     }
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
+    return render_to_response(template_name, context, context_instance=RequestContext(request), mimetype="text/plain")
 
 
 def create_draft(request, id):
