@@ -39,7 +39,7 @@ class Campaign(models.Model):
     def list_ids(self):
         ids = []
         for r in self.recipients_set.all():
-            if r.list_id not in ids:
+            if len(r.list_id) and r.list_id not in ids:
                 ids.append(r.list_id)
         return ids
     
@@ -48,11 +48,11 @@ class Campaign(models.Model):
         list_ids = self.list_ids
         ids = []
         for r in self.recipients_set.all():
-            if r.segment_id not in ids and r.list_id in list_ids:
+            if len(r.segment_id) and r.segment_id not in ids and r.list_id in list_ids:
                 ids.append(r.segment_id)
         return ids
     
-    def create_draft(self):
+    def create_draft(self, preview_recipients=[]):
         CreateSend.api_key = settings.API_KEY
         campaign = CSCampaign()
         attrs = dict(
@@ -73,6 +73,9 @@ class Campaign(models.Model):
             self.save()
         except BadRequest, e:
             raise
+        if len(preview_recipients):
+            campaign = CSCampaign(campaign_id)
+            campaign.send_preview(preview_recipients)
 
 
 class Recipients(models.Model):

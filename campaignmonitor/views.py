@@ -30,8 +30,13 @@ def create_draft(request, id):
     context = {
         'campaign': campaign
     }
+    
+    preview_recipients = []
+    if request.user.email:
+        preview_recipients.append(request.user.email)
+    
     try:
-        campaign.create_draft()
+        campaign.create_draft(preview_recipients=preview_recipients)
     except BadRequest, e:
         context.update({'error': e})
     return render_to_response('campaignmonitor/draft-created.html', context, context_instance=RequestContext(request))
