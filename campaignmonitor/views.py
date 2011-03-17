@@ -1,4 +1,5 @@
 from createsend import BadRequest
+from django.conf import settings as django_settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
@@ -40,6 +41,17 @@ def create_draft(request, id):
         messages.success(request, _("The draft for campaign '%(name)s' was created successfully.") % {'name': campaign.name})
         if request.user.email:
             messages.info(request, _("A preview has been sent to %(email)s.") % {'email': request.user.email})
+    except BadRequest, e:
+        messages.error(request, _("An error occurred: %(code)s %(message)s") % {'code': e.data.Code, 'message': e.data.Message})
+    
+    return HttpResponseRedirect(reverse('admin:campaignmonitor_campaign_changelist'))
+
+
+def send_campaign(request, id):
+    campaign = get_object_or_404(Campaign, id=id)
+    try:
+        campaign.send(request.user.email or django_settings.ADMINS[0][1])
+        messages.success(request, _("The campaign '%(name)s' was sent successfully.") % {'name': campaign.name})
     except BadRequest, e:
         messages.error(request, _("An error occurred: %(code)s %(message)s") % {'code': e.data.Code, 'message': e.data.Message})
     

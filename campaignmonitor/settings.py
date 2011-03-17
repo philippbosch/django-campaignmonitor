@@ -24,3 +24,4 @@ for list in LISTS:
             SEGMENTS.append((segment[0], "%s :: %s" % (list[1], segment[1])))
     except IndexError:
         pass
+SEGMENTS = tuple(SEGMENTS)

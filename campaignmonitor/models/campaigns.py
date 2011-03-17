@@ -13,6 +13,14 @@ from ..utils import get_content_models
 
 
 class Campaign(models.Model):
+    STATUS_NEW = 1
+    STATUS_DRAFT = 2
+    STATUS_SENT = 3
+    STATUS_CHOICES = (
+        (STATUS_NEW, _("new")),
+        (STATUS_DRAFT, _("draft")),
+        (STATUS_SENT, _("sent")),
+    )
     cm_id = models.CharField(verbose_name=_("Campaign Monitor ID"), max_length=32, blank=True, editable=True)
     name = models.CharField(verbose_name=_("name"), max_length=255)
     subject = models.CharField(verbose_name=_("subject"), max_length=255)
@@ -21,6 +29,7 @@ class Campaign(models.Model):
     content_type = models.ForeignKey(ContentType, limit_choices_to=Q(app_label__in=[m[0] for m in get_content_models()], model__in=[m[1] for m in get_content_models()])) # TODO: Check also the combination of app_label and model
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
+    status = models.PositiveSmallIntegerField(verbose_name=_("status"), choices=STATUS_CHOICES)
     
     class Meta:
         verbose_name = _("campaign")
@@ -79,12 +88,21 @@ class Campaign(models.Model):
         if len(preview_recipients):
             campaign = CSCampaign(campaign_id)
             campaign.send_preview(preview_recipients)
+    
+    def send(self, confirmation_email):
+        if not self.cm_id:
+            raise ValueError("No draft created yet")
+        CreateSend.api_key = settings.API_KEY
+        campaign = CSCampaign(self.cm_id)
+        return campaign.send(confirmation_email=confirmation_email)
 
 
 class Recipients(models.Model):
+    LIST_CHOICES = [(l[0], l[1]) for l in settings.LISTS]
+    SEGMENT_CHOICES = [(s[0], s[1]) for s in settings.SEGMENTS]
     campaign = models.ForeignKey(Campaign, verbose_name=_("campaign"))
-    list_id = models.CharField(verbose_name=_("list"), max_length=32, blank=True, choices=[(l[0], l[1]) for l in settings.LISTS])
-    segment_id = models.CharField(verbose_name=_("segment"), max_length=32, blank=True, choices=[(s[0], s[1]) for s in settings.SEGMENTS])
+    list_id = models.CharField(verbose_name=_("list"), max_length=32, blank=True, choices=LIST_CHOICES)
+    segment_id = models.CharField(verbose_name=_("segment"), max_length=32, blank=True, choices=SEGMENT_CHOICES, editable=len(SEGMENT_CHOICES) > 0)
     
     class Meta:
         verbose_name = _("recipients")

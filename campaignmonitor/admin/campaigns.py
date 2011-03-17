@@ -12,7 +12,7 @@ class RecipientsInline(admin.TabularInline):
     extra = 1
 
 class CampaignAdmin(admin.ModelAdmin):
-    list_display = ('name', 'subject', 'preview_link', 'create_draft_link',)
+    list_display = ('name', 'subject', 'preview_link', 'create_draft_link', 'send_campaign_link')
     readonly_fields = ('cm_id',)
     inlines = [RecipientsInline,]
     
@@ -26,5 +26,11 @@ class CampaignAdmin(admin.ModelAdmin):
     create_draft_link.short_description = _("create draft")
     create_draft_link.allow_tags = True
     
+    def send_campaign_link(self, instance):
+        if not instance.cm_id:
+            return ""
+        return '<a href="%s">%s</a>' % (reverse('campaign_send_campaign', kwargs={'id': instance.id}), capfirst(_("send campaign")))
+    send_campaign_link.short_description = _("send campaign")
+    send_campaign_link.allow_tags = True
 
 admin.site.register(Campaign, CampaignAdmin)
