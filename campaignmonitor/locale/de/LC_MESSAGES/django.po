@@ -1,0 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-03-18 10:36+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: views.py:41
+#, python-format
+msgid "The draft for campaign '%(name)s' was created successfully."
+msgstr "Ein Entwurf für Kampange '%(name)s' wurde erfolgreich angelegt."
+
+#: views.py:43
+#, python-format
+msgid "A preview has been sent to %(email)s."
+msgstr "Eine Vorschau-E-Mail wurde an %(email)s geschickt."
+
+#: views.py:45 views.py:56
+#, python-format
+msgid "An error occurred: %(code)s %(message)s"
+msgstr "Es ist ein Fehler aufgetreten: %(code)s %(message)s"
+
+#: views.py:54
+#, python-format
+msgid "The campaign '%(name)s' was sent successfully."
+msgstr "Die Kampagne '%(name)s' wurde erfolgreich versandt."
+
+#: admin/campaigns.py:20 admin/campaigns.py:21
+msgid "preview"
+msgstr "Vorschau"
+
+#: admin/campaigns.py:25 admin/campaigns.py:26
+msgid "create draft"
+msgstr "Vorschau erstellen"
+
+#: admin/campaigns.py:32 admin/campaigns.py:33
+msgid "send campaign"
+msgstr "Kampagne versenden"
+
+#: cmexample/models.py:5 models/lists.py:6
+msgid "title"
+msgstr "Titel"
+
+#: cmexample/models.py:6
+msgid "content"
+msgstr "Inhalt"
+
+#: cmexample/models.py:9
+msgid "simple newsletter"
+msgstr "Simple Newsletter"
+
+#: cmexample/models.py:10
+msgid "simple newsletters"
+msgstr "Simple Newsletter"
+
+#: models/campaigns.py:20
+msgid "new"
+msgstr "neu"
+
+#: models/campaigns.py:21
+msgid "draft"
+msgstr "Entwurf"
+
+#: models/campaigns.py:22
+msgid "sent"
+msgstr "versandt"
+
+#: models/campaigns.py:24 models/lists.py:5
+msgid "Campaign Monitor ID"
+msgstr "Campaign Monitor ID"
+
+#: models/campaigns.py:25 models/subscribers.py:14
+msgid "name"
+msgstr "Name"
+
+#: models/campaigns.py:26
+msgid "subject"
+msgstr "Betreff"
+
+#: models/campaigns.py:27
+msgid "from name"
+msgstr "Absender (Name)"
+
+#: models/campaigns.py:28
+msgid "email"
+msgstr "E-Mail"
+
+#: models/campaigns.py:32
+msgid "status"
+msgstr "Status"
+
+#: models/campaigns.py:35 models/campaigns.py:106
+msgid "campaign"
+msgstr "Kampagne"
+
+#: models/campaigns.py:36
+msgid "campaigns"
+msgstr "Kampagnen"
+
+#: models/campaigns.py:107 models/lists.py:12
+msgid "list"
+msgstr "Liste"
+
+#: models/campaigns.py:108
+msgid "segment"
+msgstr "Segment"
+
+#: models/campaigns.py:111 models/campaigns.py:112
+msgid "recipients"
+msgstr "Empfänger"
+
+#: models/campaigns.py:117
+msgid "Select either a list or a segment but not both"
+msgstr "Bitte entweder eine Liste oder ein Segment auswählen, nicht beides"
+
+#: models/campaigns.py:120
+msgid "Select either a list or a segment"
+msgstr "Bitte eine Liste oder ein Segment auswählen"
+
+#: models/lists.py:7
+msgid "unsubscribe page"
+msgstr "Abmeldeseite"
+
+#: models/lists.py:8
+msgid "confirmed opt-in"
+msgstr "Double Opt-In"
+
+#: models/lists.py:9
+msgid "confirmation success page"
+msgstr "Erfolgsseite nach Anmeldung"
+
+#: models/lists.py:13
+msgid "lists"
+msgstr "Listen"
+
+#: models/subscribers.py:9
+msgid "active"
+msgstr "aktiv"
+
+#: models/subscribers.py:10
+msgid "inactive"
+msgstr "inaktiv"
+
+#: models/subscribers.py:13
+msgid "email address"
+msgstr "E-Mail-Adresse"
+
+#: models/subscribers.py:15
+msgid "date"
+msgstr "Datum"
+
+#: models/subscribers.py:16
+msgid "state"
+msgstr "Status"
+
+#: models/subscribers.py:19 models/subscribers.py:25
+msgid "subscriber"
+msgstr "Empfänger"
+
+#: models/subscribers.py:20
+msgid "subscribers"
+msgstr "Empfänger"
+
+#: models/subscribers.py:26
+msgid "key"
+msgstr "Schlüssel"
+
+#: models/subscribers.py:27
+msgid "value"
+msgstr "Wert"
+
+#: models/subscribers.py:30
+msgid "custom field"
+msgstr "individuelles Feld"
+
+#: models/subscribers.py:31
+msgid "custom fields"
+msgstr "individuelle Felder"
