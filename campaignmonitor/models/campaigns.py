@@ -29,7 +29,7 @@ class Campaign(models.Model):
     content_type = models.ForeignKey(ContentType, limit_choices_to=Q(app_label__in=[m[0] for m in get_content_models()], model__in=[m[1] for m in get_content_models()])) # TODO: Check also the combination of app_label and model
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
-    status = models.PositiveSmallIntegerField(verbose_name=_("status"), choices=STATUS_CHOICES)
+    status = models.PositiveSmallIntegerField(verbose_name=_("status"), choices=STATUS_CHOICES, default=STATUS_NEW, editable=False)
     
     class Meta:
         verbose_name = _("campaign")
@@ -82,6 +82,7 @@ class Campaign(models.Model):
         try:
             campaign_id = campaign.create(**attrs)
             self.cm_id = campaign_id
+            self.status = self.STATUS_DRAFT
             self.save()
         except BadRequest, e:
             raise
@@ -94,7 +95,9 @@ class Campaign(models.Model):
             raise ValueError("No draft created yet")
         CreateSend.api_key = settings.API_KEY
         campaign = CSCampaign(self.cm_id)
-        return campaign.send(confirmation_email=confirmation_email)
+        campaign.send(confirmation_email=confirmation_email)
+        self.status = self.STATUS_SENT
+        self.save()
 
 
 class Recipients(models.Model):
