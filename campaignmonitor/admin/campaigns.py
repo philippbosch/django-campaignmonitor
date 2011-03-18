@@ -22,14 +22,14 @@ class CampaignAdmin(admin.ModelAdmin):
     preview_link.allow_tags = True
     
     def create_draft_link(self, instance):
-        return '<a href="%s">%s</a>' % (reverse('campaign_create_draft', kwargs={'id': instance.id}), capfirst(_("create draft")))
+        return '<a href="%s" class="button">%s</a>' % (reverse('campaign_create_draft', kwargs={'id': instance.id}), capfirst(_("create draft")))
     create_draft_link.short_description = _("create draft")
     create_draft_link.allow_tags = True
     
     def send_campaign_link(self, instance):
         if not instance.cm_id:
             return ""
-        return '<a href="%s">%s</a>' % (reverse('campaign_send_campaign', kwargs={'id': instance.id}), capfirst(_("send campaign")))
+        return '<a href="%s" class="button" onclick="if (!confirm(\'Are you sure you want to send this campaign?\')) return false;">%s</a>' % (reverse('campaign_send_campaign', kwargs={'id': instance.id}), capfirst(_("send campaign")))
     send_campaign_link.short_description = _("send campaign")
     send_campaign_link.allow_tags = True
 
